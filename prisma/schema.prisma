@@ -1,0 +1,67 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+enum Role {
+  PATIENT
+  DOCTOR
+  SUPER_ADMIN
+}
+
+model User {
+  id                String    @id @default(cuid())
+  email             String?   @unique
+  phone             String?   @unique
+  passwordHash      String?
+  role              Role      @default(PATIENT)
+  isActive          Boolean   @default(true)
+  isEmailVerified   Boolean   @default(false)
+  isPhoneVerified   Boolean   @default(false)
+  emailVerifyToken  String?
+  phoneOtp          String?
+  phoneOtpExpiresAt DateTime?
+  resetToken        String?
+  resetTokenExpiry  DateTime?
+  lastLoginAt       DateTime?
+  createdAt         DateTime  @default(now())
+  updatedAt         DateTime  @updatedAt
+
+  patient       Patient?
+  refreshTokens RefreshToken[]
+
+  @@map("users")
+}
+
+model RefreshToken {
+  id        String   @id @default(cuid())
+  token     String   @unique
+  userId    String
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  expiresAt DateTime
+  createdAt DateTime @default(now())
+
+  @@map("refresh_tokens")
+}
+
+model Patient {
+  id          String    @id @default(cuid())
+  userId      String    @unique
+  user        User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+  firstName   String
+  lastName    String
+  dateOfBirth DateTime?
+  gender      String?
+  avatarUrl   String?
+  bloodGroup  String?
+  address     String?
+  city        String?
+  createdAt   DateTime  @default(now())
+  updatedAt   DateTime  @updatedAt
+
+  @@map("patients")
+}
