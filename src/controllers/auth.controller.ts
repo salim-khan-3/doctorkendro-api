@@ -175,7 +175,7 @@ export const loginWithEmail = asyncHandler(
       maxAge: 7 * 24 * 60 * 60 * 1000,
     })
 
-    const { passwordHash, ...safeUser } = user as any
+    const { passwordHash, emailVerifyToken, resetToken, ...safeUser } = user as any
     res.json(
       ApiResponse.success('Login successful', {
         user: safeUser,

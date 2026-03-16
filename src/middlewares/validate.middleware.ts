@@ -1,9 +1,9 @@
 import { Request, Response, NextFunction } from 'express'
-import { AnyZodObject, ZodError } from 'zod'
+import { ZodObject, ZodRawShape, ZodError } from 'zod'
 import { ApiError } from '../utils/ApiError'
 
 export const validate =
-  (schema: AnyZodObject) =>
+  (schema: ZodObject<ZodRawShape>) =>
   async (req: Request, _res: Response, next: NextFunction): Promise<void> => {
     try {
       await schema.parseAsync({
@@ -14,7 +14,7 @@ export const validate =
       next()
     } catch (error) {
       if (error instanceof ZodError) {
-        const errors = error.errors.map((e) => ({
+        const errors = error.issues.map((e) => ({
           field: e.path.slice(1).join('.'),
           message: e.message,
         }))
