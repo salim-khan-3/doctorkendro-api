@@ -18,18 +18,24 @@ export const registerWithEmail = asyncHandler(
     const passwordHash = await bcrypt.hash(password, 12);
     const emailVerifyToken = generateOtp();
 
-    const user = await prisma.user.create({
-      data: {
-        email,
-        passwordHash,
-        role,
-        emailVerifyToken,
-        ...(role === "PATIENT" && {
-          patient: { create: { firstName, lastName } },
-        }),
-      },
-      include: { patient: true },
-    });
+   const user = await prisma.user.create({
+  data: {
+    email,
+    passwordHash,
+    role,
+    emailVerifyToken,
+    ...(role === 'PATIENT' && {
+      patient: { create: { firstName, lastName } },
+    }),
+    ...(role === 'DOCTOR' && {
+      doctor: { create: { firstName, lastName } },
+    }),
+  },
+  include: {
+    patient: true,
+    doctor: true,
+  },
+})
 
     const { passwordHash: _, emailVerifyToken: __, ...safeUser } = user as any;
 

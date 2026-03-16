@@ -112,7 +112,7 @@ export const searchDoctors = asyncHandler(
 // ---- GET SINGLE DOCTOR PROFILE ----
 export const getDoctorProfile = asyncHandler(
   async (req: Request, res: Response) => {
-    const { id } = req.params
+    const id = req.params.id as string
 
     const doctor = await prisma.doctor.findFirst({
       where: {
