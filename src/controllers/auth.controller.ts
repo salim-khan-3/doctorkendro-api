@@ -140,10 +140,10 @@ export const loginWithEmail = asyncHandler(
   async (req: Request, res: Response) => {
     const { email, password } = req.body;
 
-    const user = await prisma.user.findUnique({
-      where: { email },
-      include: { patient: true },
-    });
+ const user = await prisma.user.findUnique({
+  where: { email },
+  include: { patient: true, doctor: true },
+})
 
     if (!user || !user.passwordHash)
       throw ApiError.unauthorized("Invalid credentials");
