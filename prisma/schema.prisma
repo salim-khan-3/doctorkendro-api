@@ -61,8 +61,41 @@ model Patient {
   bloodGroup  String?
   address     String?
   city        String?
+  familyMembers  FamilyMember[]
+  medicalRecords MedicalRecord[]
   createdAt   DateTime  @default(now())
   updatedAt   DateTime  @updatedAt
 
   @@map("patients")
+}
+
+model FamilyMember {
+  id          String    @id @default(cuid())
+  patientId   String
+  patient     Patient   @relation(fields: [patientId], references: [id], onDelete: Cascade)
+  firstName   String
+  lastName    String
+  relation    String
+  dateOfBirth DateTime?
+  gender      String?
+  bloodGroup  String?
+  createdAt   DateTime  @default(now())
+  updatedAt   DateTime  @updatedAt
+
+  @@map("family_members")
+}
+
+model MedicalRecord {
+  id          String   @id @default(cuid())
+  patientId   String
+  patient     Patient  @relation(fields: [patientId], references: [id], onDelete: Cascade)
+  title       String
+  description String?
+  fileUrl     String?
+  fileType    String?
+  recordDate  DateTime
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  @@map("medical_records")
 }
