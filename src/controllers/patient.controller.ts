@@ -86,7 +86,7 @@ export const addFamilyMember = asyncHandler(
 export const deleteFamilyMember = asyncHandler(
   async (req: Request, res: Response) => {
     const userId = req.user!.id
-    const { memberId } = req.params
+    const memberId = req.params.memberId as string
 
     const patient = await prisma.patient.findUnique({ where: { userId } })
     if (!patient) throw ApiError.notFound('Patient not found')
