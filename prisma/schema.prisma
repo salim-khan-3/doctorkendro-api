@@ -33,11 +33,11 @@ model User {
   updatedAt         DateTime  @updatedAt
 
   patient       Patient?
+  doctor        Doctor?
   refreshTokens RefreshToken[]
 
   @@map("users")
 }
-
 model RefreshToken {
   id        String   @id @default(cuid())
   token     String   @unique
@@ -98,4 +98,127 @@ model MedicalRecord {
   updatedAt   DateTime @updatedAt
 
   @@map("medical_records")
+}
+
+
+enum VerificationStatus {
+  PENDING
+  VERIFIED
+  REJECTED
+}
+
+enum DayOfWeek {
+  MONDAY
+  TUESDAY
+  WEDNESDAY
+  THURSDAY
+  FRIDAY
+  SATURDAY
+  SUNDAY
+}
+
+model Doctor {
+  id                 String             @id @default(cuid())
+  userId             String             @unique
+  user               User               @relation(fields: [userId], references: [id], onDelete: Cascade)
+  firstName          String
+  lastName           String
+  gender             String?
+  avatarUrl          String?
+  pmcNumber          String?            @unique
+  about              String?
+  experience         Int?
+  verificationStatus VerificationStatus @default(PENDING)
+  isAvailableOnline  Boolean            @default(false)
+  onlineFee          Decimal?           @db.Decimal(10, 2)
+  inPersonFee        Decimal?           @db.Decimal(10, 2)
+  avgRating          Float?             @default(0)
+  totalReviews       Int                @default(0)
+  totalPatients      Int                @default(0)
+  createdAt          DateTime           @default(now())
+  updatedAt          DateTime           @updatedAt
+
+  specializations DoctorSpecialization[]
+  qualifications  DoctorQualification[]
+  clinics         DoctorClinic[]
+  schedules       DoctorSchedule[]
+
+  @@map("doctors")
+}
+
+model Specialization {
+  id          String   @id @default(cuid())
+  name        String   @unique
+  slug        String   @unique
+  description String?
+  iconUrl     String?
+  isActive    Boolean  @default(true)
+  createdAt   DateTime @default(now())
+
+  doctors DoctorSpecialization[]
+
+  @@map("specializations")
+}
+
+model DoctorSpecialization {
+  id               String         @id @default(cuid())
+  doctorId         String
+  doctor           Doctor         @relation(fields: [doctorId], references: [id], onDelete: Cascade)
+  specializationId String
+  specialization   Specialization @relation(fields: [specializationId], references: [id])
+  isPrimary        Boolean        @default(false)
+
+  @@unique([doctorId, specializationId])
+  @@map("doctor_specializations")
+}
+
+model DoctorQualification {
+  id          String   @id @default(cuid())
+  doctorId    String
+  doctor      Doctor   @relation(fields: [doctorId], references: [id], onDelete: Cascade)
+  degree      String
+  institution String
+  year        Int?
+  country     String?
+  createdAt   DateTime @default(now())
+
+  @@map("doctor_qualifications")
+}
+
+model DoctorClinic {
+  id          String   @id @default(cuid())
+  doctorId    String
+  doctor      Doctor   @relation(fields: [doctorId], references: [id], onDelete: Cascade)
+  clinicName  String
+  address     String
+  city        String
+  phone       String?
+  fee         Decimal? @db.Decimal(10, 2)
+  latitude    Float?
+  longitude   Float?
+  isActive    Boolean  @default(true)
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  schedules DoctorSchedule[]
+
+  @@map("doctor_clinics")
+}
+
+model DoctorSchedule {
+  id           String       @id @default(cuid())
+  doctorId     String
+  doctor       Doctor       @relation(fields: [doctorId], references: [id], onDelete: Cascade)
+  clinicId     String?
+  clinic       DoctorClinic? @relation(fields: [clinicId], references: [id])
+  dayOfWeek    DayOfWeek
+  startTime    String
+  endTime      String
+  slotDuration Int          @default(15)
+  maxPatients  Int          @default(20)
+  isAvailable  Boolean      @default(true)
+  createdAt    DateTime     @default(now())
+  updatedAt    DateTime     @updatedAt
+
+  @@map("doctor_schedules")
 }
