@@ -8,6 +8,7 @@ import { ApiError } from './utils/ApiError'
 
 // Routes
 import authRoutes from './routes/auth.routes'
+import patientRoutes from './routes/patient.routes'
 
 const app: Application = express()
 
@@ -38,6 +39,7 @@ app.use(morgan('dev'))
 const API = '/api/v1'
 
 app.use(`${API}/auth`, authRoutes)
+app.use(`${API}/patients`, patientRoutes)
 
 // Health check
 app.get('/health', (_req: Request, res: Response) => {
