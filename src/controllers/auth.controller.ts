@@ -345,8 +345,15 @@ export const getMe = asyncHandler(async (req: Request, res: Response) => {
 
   if (!user) throw ApiError.notFound("User not found");
 
-  const { passwordHash, phoneOtp, resetToken, emailVerifyToken, ...safeUser } =
-    user as any;
+  const {
+  passwordHash,
+  phoneOtp,
+  phoneOtpExpiresAt,
+  resetToken,
+  resetTokenExpiry,
+  emailVerifyToken,
+  ...safeUser
+} = user as any
 
   res.json(ApiResponse.success("Profile fetched", safeUser));
 });
