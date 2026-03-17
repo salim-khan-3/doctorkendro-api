@@ -1,4 +1,4 @@
-import { Router } from 'express'
+import { Router } from "express";
 import {
   searchDoctors,
   getDoctorProfile,
@@ -7,50 +7,42 @@ import {
   upsertSchedule,
   addQualification,
   getMyDoctorProfile,
-} from '../controllers/doctor.controller'
-import { authenticate, authorize } from '../middlewares/auth.middleware'
+  addSpecialization, // ← নতুন
+  getAllSpecializations, // ← নতুন
+} from "../controllers/doctor.controller";
+import { authenticate, authorize } from "../middlewares/auth.middleware";
 
-const router = Router()
+const router = Router();
 
 // ---- DOCTOR ONLY ROUTES ----
 router.get(
-  '/me/profile',
+  "/me/profile",
   authenticate,
-  authorize('DOCTOR'),
-  getMyDoctorProfile
-)
+  authorize("DOCTOR"),
+  getMyDoctorProfile,
+);
 router.patch(
-  '/me/profile',
+  "/me/profile",
   authenticate,
-  authorize('DOCTOR'),
-  updateDoctorProfile
-)
+  authorize("DOCTOR"),
+  updateDoctorProfile,
+);
+router.post("/me/clinic", authenticate, authorize("DOCTOR"), addClinic);
+router.post("/me/schedule", authenticate, authorize("DOCTOR"), upsertSchedule);
+router.post('/me/specialization', authenticate, authorize('DOCTOR'), addSpecialization)
 router.post(
-  '/me/clinic',
+  "/me/qualification",
   authenticate,
-  authorize('DOCTOR'),
-  addClinic
-)
-router.post(
-  '/me/schedule',
-  authenticate,
-  authorize('DOCTOR'),
-  upsertSchedule
-)
-router.post(
-  '/me/qualification',
-  authenticate,
-  authorize('DOCTOR'),
-  addQualification
-)
+  authorize("DOCTOR"),
+  addQualification,
+);
 
 // ---- PUBLIC ROUTES ----
-router.get('/', searchDoctors)
-router.get('/:id', getDoctorProfile)
+router.get('/specializations', getAllSpecializations)
+router.get("/", searchDoctors);
+router.get("/:id", getDoctorProfile);
 
-export default router
-
-
+export default router;
 
 // import { Router } from 'express'
 // import {

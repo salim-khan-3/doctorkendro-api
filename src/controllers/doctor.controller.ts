@@ -274,3 +274,56 @@ export const getMyDoctorProfile = asyncHandler(
   }
 )
 
+
+// ---- ADD SPECIALIZATION ----
+export const addSpecialization = asyncHandler(
+  async (req: Request, res: Response) => {
+    const userId = req.user!.id
+    const { specializationId, isPrimary = false } = req.body
+
+    const doctor = await prisma.doctor.findUnique({ where: { userId } })
+    if (!doctor) throw ApiError.notFound('Doctor not found')
+
+    const specialization = await prisma.specialization.findUnique({
+      where: { id: specializationId },
+    })
+    if (!specialization) throw ApiError.notFound('Specialization not found')
+
+    if (isPrimary) {
+      await prisma.doctorSpecialization.updateMany({
+        where: { doctorId: doctor.id, isPrimary: true },
+        data: { isPrimary: false },
+      })
+    }
+
+    const result = await prisma.doctorSpecialization.upsert({
+      where: {
+        doctorId_specializationId: {
+          doctorId: doctor.id,
+          specializationId,
+        },
+      },
+      update: { isPrimary },
+      create: {
+        doctorId: doctor.id,
+        specializationId,
+        isPrimary,
+      },
+      include: { specialization: true },
+    })
+
+    res.status(201).json(ApiResponse.success('Specialization added', result))
+  }
+)
+
+// ---- GET ALL SPECIALIZATIONS ----
+export const getAllSpecializations = asyncHandler(
+  async (_req: Request, res: Response) => {
+    const specializations = await prisma.specialization.findMany({
+      where: { isActive: true },
+      orderBy: { name: 'asc' },
+    })
+
+    res.json(ApiResponse.success('Specializations fetched', specializations))
+  }
+)
