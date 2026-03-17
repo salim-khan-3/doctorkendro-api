@@ -63,6 +63,7 @@ model Patient {
   city        String?
   familyMembers  FamilyMember[]
   medicalRecords MedicalRecord[]
+  appointments Appointment[]
   createdAt   DateTime  @default(now())
   updatedAt   DateTime  @updatedAt
 
@@ -81,6 +82,8 @@ model FamilyMember {
   bloodGroup  String?
   createdAt   DateTime  @default(now())
   updatedAt   DateTime  @updatedAt
+
+  appointments Appointment[]
 
   @@map("family_members")
 }
@@ -142,6 +145,7 @@ model Doctor {
   qualifications  DoctorQualification[]
   clinics         DoctorClinic[]
   schedules       DoctorSchedule[]
+  appointments Appointment[]
 
   @@map("doctors")
 }
@@ -221,4 +225,42 @@ model DoctorSchedule {
   updatedAt    DateTime     @updatedAt
 
   @@map("doctor_schedules")
+}
+
+
+
+enum AppointmentType {
+  IN_PERSON
+  VIDEO
+  AUDIO
+  CHAT
+}
+
+enum AppointmentStatus {
+  PENDING
+  CONFIRMED
+  CANCELLED
+  COMPLETED
+  NO_SHOW
+}
+
+model Appointment {
+  id                 String            @id @default(cuid())
+  patientId          String
+  patient            Patient           @relation(fields: [patientId], references: [id])
+  doctorId           String
+  doctor             Doctor            @relation(fields: [doctorId], references: [id])
+  familyMemberId     String?
+  familyMember       FamilyMember?     @relation(fields: [familyMemberId], references: [id])
+  type               AppointmentType
+  status             AppointmentStatus @default(PENDING)
+  scheduledAt        DateTime
+  notes              String?
+  cancellationReason String?
+  fee                Decimal           @db.Decimal(10, 2)
+  tokenNumber        Int?
+  createdAt          DateTime          @default(now())
+  updatedAt          DateTime          @updatedAt
+
+  @@map("appointments")
 }
