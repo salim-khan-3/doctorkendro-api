@@ -197,7 +197,7 @@ export const loginWithEmail = asyncHandler(
   },
 );
 
-// ---- LOGIN WITH PHONE ----
+// ---- LOGIN WITH PHONE number----
 export const loginWithPhone = asyncHandler(
   async (req: Request, res: Response) => {
     const { phone } = req.body;
