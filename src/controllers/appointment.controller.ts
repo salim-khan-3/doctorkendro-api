@@ -178,7 +178,7 @@ export const getDoctorAppointments = asyncHandler(
 // ---- GET SINGLE APPOINTMENT ----
 export const getAppointmentById = asyncHandler(
   async (req: Request, res: Response) => {
-    const { id } = req.params
+    const id = req.params.id as string
     const userId = req.user!.id
 
     const appointment = await prisma.appointment.findUnique({
@@ -222,7 +222,7 @@ export const getAppointmentById = asyncHandler(
 // ---- CONFIRM APPOINTMENT (doctor) ----
 export const confirmAppointment = asyncHandler(
   async (req: Request, res: Response) => {
-    const { id } = req.params
+   const id = req.params.id as string
     const userId = req.user!.id
 
     const doctor = await prisma.doctor.findUnique({ where: { userId } })
@@ -246,7 +246,7 @@ export const confirmAppointment = asyncHandler(
 // ---- CANCEL APPOINTMENT ----
 export const cancelAppointment = asyncHandler(
   async (req: Request, res: Response) => {
-    const { id } = req.params
+    const id = req.params.id as string
     const userId = req.user!.id
     const { reason } = req.body
 
@@ -278,7 +278,7 @@ export const cancelAppointment = asyncHandler(
 // ---- COMPLETE APPOINTMENT (doctor) ----
 export const completeAppointment = asyncHandler(
   async (req: Request, res: Response) => {
-    const { id } = req.params
+    const id = req.params.id as string
     const userId = req.user!.id
 
     const doctor = await prisma.doctor.findUnique({ where: { userId } })

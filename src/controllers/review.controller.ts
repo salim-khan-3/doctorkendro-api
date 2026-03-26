@@ -63,7 +63,7 @@ export const createReview = asyncHandler(
 // ---- GET DOCTOR REVIEWS ----
 export const getDoctorReviews = asyncHandler(
   async (req: Request, res: Response) => {
-    const { doctorId } = req.params
+    const doctorId = req.params.doctorId as string
     const page = Math.max(1, parseInt(req.query.page as string) || 1)
     const limit = Math.min(20, parseInt(req.query.limit as string) || 10)
     const skip = (page - 1) * limit
@@ -102,7 +102,7 @@ export const getDoctorReviews = asyncHandler(
 export const updateReview = asyncHandler(
   async (req: Request, res: Response) => {
     const userId = req.user!.id
-    const { id } = req.params
+    const id = req.params.id as string
     const { rating, comment } = req.body
 
     if (rating < 1 || rating > 5) {
