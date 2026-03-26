@@ -11,6 +11,7 @@ import authRoutes from './routes/auth.routes'
 import patientRoutes from './routes/patient.routes'
 import doctorRoutes from './routes/doctor.routes'
 import appointmentRoutes from './routes/appointment.routes'
+import reviewRoutes from './routes/review.routes'
 
 const app: Application = express()
 
@@ -44,6 +45,7 @@ app.use(`${API}/auth`, authRoutes)
 app.use(`${API}/patients`, patientRoutes)
 app.use(`${API}/doctors`, doctorRoutes)
 app.use(`${API}/appointments`, appointmentRoutes)
+app.use(`${API}/reviews`, reviewRoutes)
 
 // Health check
 app.get('/health', (_req: Request, res: Response) => {
