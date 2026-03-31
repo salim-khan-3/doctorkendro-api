@@ -140,10 +140,10 @@ export const loginWithEmail = asyncHandler(
   async (req: Request, res: Response) => {
     const { email, password } = req.body;
 
- const user = await prisma.user.findUnique({
-  where: { email },
-  include: { patient: true, doctor: true },
-})
+    const user = await prisma.user.findUnique({
+      where: { email },
+      include: { patient: true, doctor: true },
+    })
 
     if (!user || !user.passwordHash)
       throw ApiError.unauthorized("Invalid credentials");
@@ -163,6 +163,12 @@ export const loginWithEmail = asyncHandler(
       email: user.email ?? undefined,
     });
 
+    // পুরনো refresh token delete করো
+    await prisma.refreshToken.deleteMany({
+      where: { userId: user.id },
+    });
+
+    // নতুন refresh token create করো
     await prisma.refreshToken.create({
       data: {
         token: tokens.refreshToken,
@@ -196,6 +202,8 @@ export const loginWithEmail = asyncHandler(
     );
   },
 );
+
+
 
 // ---- LOGIN WITH PHONE number----
 export const loginWithPhone = asyncHandler(
